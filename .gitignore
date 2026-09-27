@@ -1,0 +1,10 @@
+build/
+.ccache/
+.vscode/
+.idea/
+*.o
+*.obj
+*.exe
+*.out
+cmake-build-*/
+config/local.env
