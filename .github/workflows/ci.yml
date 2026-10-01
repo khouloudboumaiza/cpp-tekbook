@@ -12,10 +12,21 @@ jobs:
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j2
           ls -lh build/tekbook_app build/run_tests
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binaires
+          path: |
+            build/tekbook_app
+            build/run_tests
+          retention-days: 7
 
   unit-tests:
     needs: compile
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaires
+          path: build
+      - run: chmod +x build/run_tests build/tekbook_app
       - run: ./build/run_tests
