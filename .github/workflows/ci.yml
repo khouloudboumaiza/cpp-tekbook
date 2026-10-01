@@ -1,16 +1,29 @@
 name: CI
 on: push
 
+env:
+  CCACHE_DIR: ${{ github.workspace }}/.ccache
+  CCACHE_BASEDIR: ${{ github.workspace }}
+
 jobs:
   compile:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-${{ hashFiles('CMakeLists.txt') }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ hashFiles('CMakeLists.txt') }}-
       - name: Build
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq cmake
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          sudo apt-get update -qq && sudo apt-get install -y -qq cmake ccache
+          ccache -z
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           cmake --build build -j2
+          ccache -s
           ls -lh build/tekbook_app build/run_tests
       - uses: actions/upload-artifact@v4
         with:
