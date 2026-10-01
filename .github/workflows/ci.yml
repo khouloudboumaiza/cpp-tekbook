@@ -2,6 +2,8 @@ name: CI
 on: push
 
 env:
+  BUILD_TYPE: Release
+  APP_NAME: cpp-tekbook
   CCACHE_DIR: ${{ github.workspace }}/.ccache
   CCACHE_BASEDIR: ${{ github.workspace }}
 
@@ -19,9 +21,11 @@ jobs:
             ccache-${{ hashFiles('CMakeLists.txt') }}-
       - name: Build
         run: |
+          echo "Build de $APP_NAME en mode $BUILD_TYPE"
+          echo "Commit ${GITHUB_SHA::8} sur la branche $GITHUB_REF_NAME"
           sudo apt-get update -qq && sudo apt-get install -y -qq cmake ccache
           ccache -z
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           cmake --build build -j2
           ccache -s
           ls -lh build/tekbook_app build/run_tests
