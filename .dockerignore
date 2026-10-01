@@ -1,0 +1,6 @@
+.git
+.gitignore
+.ccache
+build
+config
+*.md

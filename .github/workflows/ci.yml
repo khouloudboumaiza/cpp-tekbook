@@ -47,3 +47,20 @@ jobs:
           path: build
       - run: chmod +x build/run_tests build/tekbook_app
       - run: ./build/run_tests
+
+  build-image:
+    if: github.ref == 'refs/heads/main'
+    needs: [unit-tests, smoke-test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Build et push
+        run: |
+          IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}:${GITHUB_SHA::8}"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
