@@ -47,3 +47,22 @@ jobs:
           path: build
       - run: chmod +x build/run_tests build/tekbook_app
       - run: ./build/run_tests
+
+  smoke-test:
+    needs: compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaires
+          path: build
+      - run: chmod +x build/tekbook_app
+      - run: ./build/tekbook_app | grep "2 + 3 = 5"
+
+  static-analysis:
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq cppcheck
+      - run: cppcheck --enable=warning --error-exitcode=1 src/ include/
