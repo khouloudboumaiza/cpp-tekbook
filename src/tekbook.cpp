@@ -9,3 +9,8 @@ int add(int a, int b) {
     return a + b;
 }
 }
+
+int defaut() {
+    int* p = nullptr;
+    return *p;
+}
